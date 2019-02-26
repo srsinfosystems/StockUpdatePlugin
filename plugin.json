@@ -1,0 +1,8 @@
+{
+      "name":"StockUpdatePlugin",
+      "description":"My first plugin",
+      "namespace":"StockUpdatePlugin",
+      "author":"Christian Moll",
+      "type":"template",
+      "serviceProvider":"StockUpdatePlugin\\Providers\\StockUpdatePluginServiceProvider"
+}
