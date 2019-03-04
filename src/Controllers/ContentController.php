@@ -42,7 +42,7 @@ class ContentController extends Controller
 			$variationDrop = $this->variationDropShiper($brand, $variations);
 			$this->updateStock($variationDrop);
 
-			exit;
+			
 		}
 		echo "Stock Updated";
 		//return $twig->render('StockUpdatePlugin::content.stockManagement');
