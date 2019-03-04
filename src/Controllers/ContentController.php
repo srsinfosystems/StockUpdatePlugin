@@ -45,7 +45,7 @@ class ContentController extends Controller
 			
 		}
 		echo "Stock Updated";
-		//return $twig->render('StockUpdatePlugin::content.stockManagement');
+		
 	}
 		
 	public function getManufacturerVariations($manufacturerId) {
@@ -74,6 +74,7 @@ class ContentController extends Controller
 		if ($err) {
 		  echo "cURL Error #:" . $err;
 		} else {
+			echo "getManufacturerVariations === ".$response;
 		  $response =json_decode($response,true);
 		  if(empty($response) || empty($response['entries'])) return;
 		  $variations = array();
@@ -111,7 +112,7 @@ class ContentController extends Controller
 		if ($err) {
 		  echo "cURL Error #:" . $err;
 		} else {
-
+			echo "getManufacturerId === ".$response;
 		  $response =json_decode($response,true);
 		  if(!empty($response) && isset($response['entries'][0]['id']))
 			return $response['entries'][0]['id'];
@@ -149,6 +150,7 @@ class ContentController extends Controller
 		else {
 		$xml = simplexml_load_string($response);
 		$json = json_encode($xml);
+		echo "variationDropShiper === ".$json;
 		$array = json_decode($json,TRUE);
 
 		if(empty($array['items']['item'])) return "";
