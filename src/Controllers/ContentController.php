@@ -46,7 +46,7 @@ exit;
 
 			exit;
 		}
-		return $this->load->view()('StockUpdatePlugin::content.stockManagement',array('data' => $array));
+		return $twig->load->view()('StockUpdatePlugin::content.stockManagement',array('data' => $array));
 	}
 		
 	public function getManufacturerVariations($manufacturerId) {
