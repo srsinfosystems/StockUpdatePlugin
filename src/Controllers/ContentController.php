@@ -144,7 +144,7 @@ exit;
 		curl_close($curl);
 
 		if ($err) {
-		  continue;
+		  return;
 		}
 		else {
 		$xml = simplexml_load_string($response);
