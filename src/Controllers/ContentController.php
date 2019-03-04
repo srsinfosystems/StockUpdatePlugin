@@ -29,8 +29,7 @@ class ContentController extends Controller
 		$this->plentyhost = "https://".$host;
 		$this->drophost = "https://www.brandsdistribution.com";
 
-		$brands = array('Ana Lublin','Annarita N','Arnaldo Toscani','Avirex','Bikkembergs','Birkenstock','Blu Byblos','Brooks Brothers','Calvin Klein','CR7 Cristiano Ronaldo','Carrera Jeans','Cerruti','Cerruti 1881','Cesare Paciotti','Coca Cola','DC Comics','Datch','Dolce &amp; Gabbana','Dsquared','Duca di Morrone','Elle Sport','Enrico Coveri','Fontana2.0','Gas','Gattinoni','Gioseppo','Guru','Imperial','Jaggy','La Martina','Laura Biagiotti','Lokita','Lumberjack','Made in Italia','Marvel','Miss Miss','Navigare','New Laviva','No Limits','Oxford University','Paris Hilton','Philipp Plein','Pierre Cardin','Pierre Cardin Underwear','Pinko','Piquadro','Plein Sport','Polaroid','Police','Putney Bridge','Renato Balestra','Rifle','Rinascimento','Seventy Seven','Silvian Heach','SkinLabo','Sparco','Star Wars','Swiss Military','Trussardi','V 1969','Burberry','Gucci','Michael Kors','MCM','Vespa','Von Furstenberg','XTi','Zoo York',
-			'DBlade','Fontana','UGG');
+		$brands = array('Adidas','Bikkembergs','Converse','Desigual','Diadora','Diadora Heritage','Diesel','Elle Sport','Emporio Armani','Gant','Geographical Norway','Geox','Guess','Hugo Boss','Lacoste','Love Moschino','Moschino','Napapijri','New Balance','Nike','Ocean Sunglasses','Puma','Ralph Lauren','Ray-Ban','Saucony','Superga','TOMS','The North Face','Timberland','Tommy Hilfiger','U.S. Polo','Vans','Versace Jeans');
 		
 		foreach($brands as $brand) {
 			$manufacturerId = $this->getManufacturerId($brand);
