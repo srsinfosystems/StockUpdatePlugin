@@ -45,7 +45,8 @@ exit;
 
 			exit;
 		}
-		return $twig->render('StockUpdatePlugin::content.stockManagement');
+		echo "Stock Updated";
+		//return $twig->render('StockUpdatePlugin::content.stockManagement');
 	}
 		
 	public function getManufacturerVariations($manufacturerId) {
