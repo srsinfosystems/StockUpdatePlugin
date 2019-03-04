@@ -14,62 +14,229 @@ class ContentController extends Controller
 	 * @param Twig $twig
 	 * @return string
 	 */
-	public function home(Twig $twig):string
-	{	
-		
-		$pageNo = 1;
-		$records = array();
-		$response = $this->updateStock();
-		$array = json_decode($response,TRUE); 
-		$pageNo = $array['page'] + 1;
-		$lastPageNumber = $array['lastPageNumber'];
-		$isLastPage = $array['isLastPage'];
-		$records = $array['entries'];
-		return $twig->render('StockUpdatePlugin::content.stockManagement',array('data' => $array));
-		
-
-	}
-	public function updateStock($pageNo=null){
-		$login = $this->login();
+	
+	public $access_token;
+	public $plentyhost;
+	public $drophost;
+	public function __construct(){
+		echo $host = $_SERVER['HTTP_HOST'];
+		$login = $this->login($host);
 		$login = json_decode($login, true);
-		$access_token = $login['access_token'];
-		$curl = curl_init();
-		if (!empty($pageNo)) {
-			$pageNoString = "page=".$pageNo."&";
-		}else{
-			$pageNoString = '';
+		echo $access_token = $login['access_token'];
+		echo $plentyhost = "https://".$host;
+		echo $drophost = "https://www.brandsdistribution.com";
+	}
+
+	public function update_stock(Twig $twig):string
+	{	
+
+		$brands = array('Ana Lublin','Annarita N','Arnaldo Toscani','Avirex','Balmain','Bikkembergs','Birkenstock','Blu Byblos','Brooks Brothers','Calvin Klein','CR7 Cristiano Ronaldo','Carrera Jeans','Cerruti','Cerruti 1881','Cesare Paciotti','Coca Cola','DC Comics','Datch','Dolce &amp; Gabbana','Dsquared','Duca di Morrone','Elle Sport','Enrico Coveri','Fontana2.0','Gas','Gattinoni','Gioseppo','Guru','Imperial','Jaggy','La Martina','Laura Biagiotti','Lokita','Lumberjack','Made in Italia','Marvel','Miss Miss','Navigare','New Laviva','No Limits','Oxford University','Paris Hilton','Philipp Plein','Pierre Cardin','Pierre Cardin Underwear','Pinko','Piquadro','Plein Sport','Polaroid','Police','Putney Bridge','Renato Balestra','Rifle','Rinascimento','Seventy Seven','Silvian Heach','SkinLabo','Sparco','Star Wars','Swiss Military','Trussardi','V 1969','Burberry','Gucci','Michael Kors','MCM','Vespa','Von Furstenberg','XTi','Zoo York',
+			'DBlade','Fontana','UGG');
+		echo "hiiiiii";
+exit;
+		foreach($brands as $brand) {
+			$manufacturerId = $this->getManufacturerId($brand);
+			if(empty($manufacturerId)) continue;
+			$variations = $this->getManufacturerVariations($manufacturerId);
+			if(empty($variations)) continue;
+
+			# get data of selected brand from dropshiper
+			$variationDrop = $this->variationDropShiper($brand, $variations);
+			$this->updateStock($variationDrop);
+
+			exit;
 		}
-		$host = $_SERVER['HTTP_HOST'];
+		return $this->load->view()('StockUpdatePlugin::content.stockManagement',array('data' => $array));
+	}
+		
+	public function getManufacturerVariations($manufacturerId) {
+		    
+		$curl = curl_init();
 		curl_setopt_array($curl, array(
-		  CURLOPT_URL => "https://".$host."/rest/stockmanagement/stock?".$pageNoString."warehouseId=104",
+		  CURLOPT_URL => $this->plentyhost."/rest/items/variations?manufacturerId=".$manufacturerId."&isActive=true",
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
-		  CURLOPT_TIMEOUT => 90000000,
+		  CURLOPT_TIMEOUT => 30,
 		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 		  CURLOPT_CUSTOMREQUEST => "GET",
 		  CURLOPT_HTTPHEADER => array(
-		    "authorization: Bearer ".$access_token,
+		    "authorization: Bearer ".$this->access_token,
 		    "cache-control: no-cache",
-		    "content-type: application/json"
+		    "content-type: application/json",
 		  ),
 		));
 
 		$response = curl_exec($curl);
-
 		$err = curl_error($curl);
 
-		curl_close($curl);		
+		curl_close($curl);
 
 		if ($err) {
-		  return "cURL Error #:" . $err;
+		  echo "cURL Error #:" . $err;
 		} else {
-		  return $response;
+		  $response =json_decode($response,true);
+		  if(empty($response) || empty($response['entries'])) return;
+		  $variations = array();
+		  foreach($response['entries'] as $entries) {
+			  $number = $entries['number'];
+			$variations[$number] = $entries['id'];
+		  }
+		  return $variations;
+		}
+	}
+	public function getManufacturerId($brand) {
+	
+		$curl = curl_init();
+
+		curl_setopt_array($curl, array(
+		  CURLOPT_URL => $this->plentyhost."/rest/items/manufacturers?name=".$brand,
+		  CURLOPT_RETURNTRANSFER => true,
+		  CURLOPT_ENCODING => "",
+		  CURLOPT_MAXREDIRS => 10,
+		  CURLOPT_TIMEOUT => 30,
+		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		  CURLOPT_CUSTOMREQUEST => "GET",
+		  CURLOPT_HTTPHEADER => array(
+		    "authorization: Bearer ".$this->access_token,
+		    "cache-control: no-cache",
+		    "content-type: application/json",
+		  ),
+		));
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+
+		if ($err) {
+		  echo "cURL Error #:" . $err;
+		} else {
+
+		  $response =json_decode($response,true);
+		  if(!empty($response) && isset($response['entries'][0]['id']))
+			return $response['entries'][0]['id'];
+		  else
+			return "";
 		}
 	}
 
-	public function login(){
-		$host = $_SERVER['HTTP_HOST'];
+	public function variationDropShiper($brand,$plentyVariations) {
+	 
+		$curl = curl_init();
+		curl_setopt_array($curl, array(
+		  CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand),
+		  CURLOPT_RETURNTRANSFER => true,
+		  CURLOPT_ENCODING => "",
+		  CURLOPT_MAXREDIRS => 10,
+		  CURLOPT_TIMEOUT => 900000,
+		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		  CURLOPT_CUSTOMREQUEST => "GET",
+		  CURLOPT_HTTPHEADER => array(
+		    "authorization: Basic MTg0Y2U4Y2YtMmM5ZC00ZGU4LWI0YjEtMmZkNjcxM2RmOGNkOlN1cmZlcjc2",
+		    "cache-control: no-cache",
+		    "content-type: application/xml",
+		  ),
+		));
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+
+		if ($err) {
+		  continue;
+		}
+		else {
+		$xml = simplexml_load_string($response);
+		$json = json_encode($xml);
+		$array = json_decode($json,TRUE);
+
+		if(empty($array['items']['item'])) return "";
+		 if (is_array($array['items']['item'])) {
+				$stock = array();
+		        foreach ($array['items']['item'] as $items) {
+					if(isset($items['models']['model'][0]['availability'])) {
+					$drop_models = $items['models']['model'];
+					}
+					else if(!empty($items['models']['model'])) {
+						$drop_models[] = $items['models']['model'];
+					}
+					if(empty($drop_models)) continue;
+					foreach($drop_models as $model) {
+						$last_updated = $model['lastUpdate'];
+						$checktime = strtotime("-15 mins");
+						$checktime = date("c", $checktime);
+						$id = $model['id'];
+						if($last_updated <= $checktime) {
+							# find relevant variation in plenty
+							if(array_key_exists($id, $plentyVariations)) {
+								$plentyId = $plentyVariations[$id];
+								$temp = array (
+									'variation_id' => $plentyId,
+									'drop_id' => $id,
+									'availability' => $model['availability'],
+
+								);
+								$stock[] = $temp;
+							}
+						}
+					}
+
+		        } #
+		        return $stock;
+		  }
+		}
+	}
+
+	public function updateStock($variations) {
+	
+		$correcttions['corrections'] = array();
+	    foreach($variations as $variation) {
+			$temp = array (
+			'variationId' => $variation['variation_id'],
+			'reasonId' => 301,
+			'quantity' => $variation['availability'],
+			'storageLocationId' => 0
+			);
+			array_push($correcttions['corrections'],$temp);
+		}
+		$stock_values =  json_encode($correcttions);
+
+		    
+		$curl = curl_init();
+
+		curl_setopt_array($curl, array(
+		  CURLOPT_URL => $this->plentyhost."/rest/stockmanagement/warehouses/104/stock/correction",
+		  CURLOPT_RETURNTRANSFER => true,
+		  CURLOPT_ENCODING => "",
+		  CURLOPT_MAXREDIRS => 10,
+		  CURLOPT_TIMEOUT => 30,
+		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		  CURLOPT_CUSTOMREQUEST => "PUT",
+		  CURLOPT_POSTFIELDS => "$stock_values",
+		  CURLOPT_HTTPHEADER => array(
+		    "authorization: Bearer ".$this->access_token,
+		    "cache-control: no-cache",
+		    "content-type: application/json",
+		  ),
+		));
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+
+		if ($err) {
+		  echo "cURL Error #:" . $err;
+		} else {
+		  //echo $response;
+		  //echo "Updated successfully";
+		}
+	}
+
+	public function login($host){
+		
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
 		  CURLOPT_URL => "https://".$host."/rest/login",
