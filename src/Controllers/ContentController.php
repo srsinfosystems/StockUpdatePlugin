@@ -22,17 +22,16 @@ class ContentController extends Controller
 	public function update_stock(Twig $twig):string
 	{	
 
-		echo $host = $_SERVER['HTTP_HOST'];
+		$host = $_SERVER['HTTP_HOST'];
 		$login = $this->login($host);
 		$login = json_decode($login, true);
-		echo $access_token = $login['access_token'];
-		echo $plentyhost = "https://".$host;
-		echo $drophost = "https://www.brandsdistribution.com";
+		$access_token = $login['access_token'];
+		$plentyhost = "https://".$host;
+		$drophost = "https://www.brandsdistribution.com";
 
 		$brands = array('Ana Lublin','Annarita N','Arnaldo Toscani','Avirex','Balmain','Bikkembergs','Birkenstock','Blu Byblos','Brooks Brothers','Calvin Klein','CR7 Cristiano Ronaldo','Carrera Jeans','Cerruti','Cerruti 1881','Cesare Paciotti','Coca Cola','DC Comics','Datch','Dolce &amp; Gabbana','Dsquared','Duca di Morrone','Elle Sport','Enrico Coveri','Fontana2.0','Gas','Gattinoni','Gioseppo','Guru','Imperial','Jaggy','La Martina','Laura Biagiotti','Lokita','Lumberjack','Made in Italia','Marvel','Miss Miss','Navigare','New Laviva','No Limits','Oxford University','Paris Hilton','Philipp Plein','Pierre Cardin','Pierre Cardin Underwear','Pinko','Piquadro','Plein Sport','Polaroid','Police','Putney Bridge','Renato Balestra','Rifle','Rinascimento','Seventy Seven','Silvian Heach','SkinLabo','Sparco','Star Wars','Swiss Military','Trussardi','V 1969','Burberry','Gucci','Michael Kors','MCM','Vespa','Von Furstenberg','XTi','Zoo York',
 			'DBlade','Fontana','UGG');
-		echo "hiiiiii";
-exit;
+		
 		foreach($brands as $brand) {
 			$manufacturerId = $this->getManufacturerId($brand);
 			if(empty($manufacturerId)) continue;
