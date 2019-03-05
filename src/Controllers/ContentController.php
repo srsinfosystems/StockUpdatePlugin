@@ -3,6 +3,8 @@ namespace StockUpdatePlugin\Controllers;
 
 use Plenty\Plugin\Controller;
 use Plenty\Plugin\Templates\Twig;
+use Plenty\Modules\Cron\Contracts;
+
 
 /**
  * Class ContentController
@@ -14,13 +16,13 @@ class ContentController extends Controller
 	 * @param Twig $twig
 	 * @return string
 	 */
-	
+
 	public $access_token;
 	public $plentyhost;
 	public $drophost;
-	
+
 	public function update_stock(Twig $twig):string
-	{	
+	{
 
 		$host = $_SERVER['HTTP_HOST'];
 		$login = $this->login($host);
@@ -30,7 +32,7 @@ class ContentController extends Controller
 		$this->drophost = "https://www.brandsdistribution.com";
 
 		$brands = array('Adidas','Bikkembergs','Converse','Desigual','Diadora','Diadora Heritage','Diesel','Elle Sport','Emporio Armani','Gant','Geographical Norway','Geox','Guess','Hugo Boss','Lacoste','Love Moschino','Moschino','Napapijri','New Balance','Nike','Ocean Sunglasses','Puma','Ralph Lauren','Ray-Ban','Saucony','Superga','TOMS','The North Face','Timberland','Tommy Hilfiger','U.S. Polo','Vans','Versace Jeans');
-		
+
 		foreach($brands as $brand) {
 			$manufacturerId = $this->getManufacturerId($brand);
 			if(empty($manufacturerId)) continue;
@@ -41,15 +43,15 @@ class ContentController extends Controller
 			$variationDrop = $this->variationDropShiper($brand, $variations);
 			$this->updateStock($variationDrop);
 
-			
+
 		}
 		echo "Stock Updated.";
 		exit;
-		
+
 	}
-		
+
 	public function getManufacturerVariations($manufacturerId) {
-		    
+
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
 		  CURLOPT_URL => $this->plentyhost."/rest/items/variations?manufacturerId=".$manufacturerId."&isActive=true",
@@ -85,7 +87,7 @@ class ContentController extends Controller
 		}
 	}
 	public function getManufacturerId($brand) {
-	
+
 		$curl = curl_init();
 
 		curl_setopt_array($curl, array(
@@ -121,7 +123,7 @@ class ContentController extends Controller
 	}
 
 	public function variationDropShiper($brand,$plentyVariations) {
-	 
+
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
 		  CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand),
@@ -189,7 +191,7 @@ class ContentController extends Controller
 	}
 
 	public function updateStock($variations) {
-	
+
 		$correcttions['corrections'] = array();
 	    foreach($variations as $variation) {
 			$temp = array (
@@ -202,7 +204,7 @@ class ContentController extends Controller
 		}
 		$stock_values =  json_encode($correcttions);
 
-		    
+
 		$curl = curl_init();
 
 		curl_setopt_array($curl, array(
@@ -235,7 +237,7 @@ class ContentController extends Controller
 	}
 
 	public function login($host){
-		
+
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
 		  CURLOPT_URL => "https://".$host."/rest/login",
@@ -264,5 +266,5 @@ class ContentController extends Controller
 		  return $response;
 		}
 	}
-	
+
 }
