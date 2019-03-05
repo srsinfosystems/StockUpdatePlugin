@@ -3,7 +3,7 @@ namespace StockUpdatePlugin\Providers;
 
 use Plenty\Plugin\ServiceProvider;
 use Plenty\Modules\Cron\Services\CronContainer;
-#use StockUpdatePlugin\Crons\StockUpdateCron;
+use StockUpdatePlugin\Crons\StockUpdateCron;
 
 /**
  * Class StockUpdatePluginServiceProvider
