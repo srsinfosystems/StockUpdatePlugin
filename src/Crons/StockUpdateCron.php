@@ -9,7 +9,7 @@ class StockUpdateCron extends Cron {
 
 
 	public function handle() {
-		App::call('StockUpdatePlugin\Controllers\ContentController@update_stock');
+		//App::call('StockUpdatePlugin\Controllers\ContentController@update_stock');
 
 	}
 }
