@@ -7,8 +7,9 @@ use Plenty\Plugin\Log\Loggable;
 
 class StockUpdateCron extends Cron {
 
-
-	public function handle() {
+	private $contentController;
+	public function handle(ContentController $contentController) {
+		$this->contentController->update_stock();
 		//App::call('StockUpdatePlugin\Controllers\ContentController@update_stock');
 
 	}
