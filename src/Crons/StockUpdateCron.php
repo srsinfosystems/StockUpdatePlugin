@@ -7,6 +7,7 @@ use Plenty\Plugin\Log\Loggable;
 
 class StockUpdateCron extends Cron {
 
+	private $contentController;
 	public function __construct(ContentController $contentController)
 	{
 		$this->contentController = $contentController;

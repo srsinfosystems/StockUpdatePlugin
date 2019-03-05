@@ -3,7 +3,6 @@ namespace StockUpdatePlugin\Controllers;
 
 use Plenty\Plugin\Controller;
 use Plenty\Plugin\Templates\Twig;
-use Plenty\Modules\Cron\Contracts;
 
 
 /**
