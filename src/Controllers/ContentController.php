@@ -16,9 +16,6 @@ class ContentController extends Controller
 	 * @return string
 	 */
 
-	public $access_token;
-	public $plentyhost;
-	public $drophost;
 
 	public function update_stock()
 	{

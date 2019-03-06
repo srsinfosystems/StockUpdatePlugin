@@ -3,6 +3,6 @@
       "description":"My first plugin",
       "namespace":"StockUpdatePlugin",
       "author":"Arun Singh",
-      "type":"template",
+      "type":"service",
       "serviceProvider":"StockUpdatePlugin\\Providers\\StockUpdatePluginServiceProvider"
 }
