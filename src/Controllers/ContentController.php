@@ -4,6 +4,7 @@ namespace StockUpdatePlugin\Controllers;
 use Plenty\Plugin\Controller;
 use Plenty\Plugin\Templates\Twig;
 
+
 /**
  * Class ContentController
  * @package StockUpdatePlugin\Controllers
@@ -15,6 +16,9 @@ class ContentController extends Controller
 	 * @return string
 	 */
 
+	public $access_token;
+	public $plentyhost;
+	public $drophost;
 
 	public function update_stock()
 	{
