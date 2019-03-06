@@ -4,7 +4,6 @@ namespace StockUpdatePlugin\Controllers;
 use Plenty\Plugin\Controller;
 use Plenty\Plugin\Templates\Twig;
 
-
 /**
  * Class ContentController
  * @package StockUpdatePlugin\Controllers
