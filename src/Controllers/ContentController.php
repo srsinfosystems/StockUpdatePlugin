@@ -20,7 +20,7 @@ class ContentController extends Controller
 	public $plentyhost;
 	public $drophost;
 
-	public function update_stock(Twig $twig):string
+	public function update_stock()
 	{
 
 		$host = $_SERVER['HTTP_HOST'];
@@ -44,7 +44,7 @@ class ContentController extends Controller
 
 
 		}
-		echo "Stock Updated.";
+		//echo "Stock Updated.";
 		exit;
 
 	}

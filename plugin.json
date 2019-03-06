@@ -2,7 +2,7 @@
       "name":"StockUpdatePlugin",
       "description":"My first plugin",
       "namespace":"StockUpdatePlugin",
-      "author":"Christian Moll",
+      "author":"Arun Singh",
       "type":"template",
       "serviceProvider":"StockUpdatePlugin\\Providers\\StockUpdatePluginServiceProvider"
 }
