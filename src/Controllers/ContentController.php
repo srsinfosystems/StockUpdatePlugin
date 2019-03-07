@@ -22,7 +22,6 @@ class ContentController extends Controller
 
 	public function update_stock()
 	{
-
 		$host = $_SERVER['HTTP_HOST'];
 		$login = $this->login($host);
 		$login = json_decode($login, true);
