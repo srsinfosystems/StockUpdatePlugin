@@ -22,7 +22,7 @@ class ContentController extends Controller
 
 	public function update_stock()
 	{
-		mail("srs.arun@gmail.com", "stock", "1");
+
 		$host = $_SERVER['HTTP_HOST'];
 		$login = $this->login($host);
 		$login = json_decode($login, true);
