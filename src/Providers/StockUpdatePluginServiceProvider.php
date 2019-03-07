@@ -14,5 +14,8 @@ class StockUpdatePluginServiceProvider extends ServiceProvider
 	public function boot(CronContainer $container) {
 		$container->add(CronContainer::EVERY_FIFTEEN_MINUTES, StockUpdateCron::class);
 	}
-
+	public function register()
+	{
+		$this->getApplication()->register(StockUpdatePluginRouteServiceProvider::class);
+	}
 }
