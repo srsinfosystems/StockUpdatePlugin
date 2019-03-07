@@ -167,7 +167,7 @@ class ContentController extends Controller
 						$checktime = strtotime("-20 mins");
 						$checktime = date("c", $checktime);
 						$id = $model['id'];
-						if($last_updated >= $checktime) {
+						//if($last_updated <= $checktime) {
 							# find relevant variation in plenty
 							if(array_key_exists($id, $plentyVariations)) {
 								$plentyId = $plentyVariations[$id];
@@ -179,7 +179,7 @@ class ContentController extends Controller
 								);
 								$stock[] = $temp;
 							}
-						}
+						//}
 					}
 
 		        } #
