@@ -32,11 +32,11 @@ class ContentController extends Controller
 				->addReference('stockUpdateCron', $response)
 				->error('Etsy::item.stockUpdateError', $ex->getMessage());
 		}
-		catch(\Exception $ex)
+		catch(Exception $ex)
 		{
 			$this->getLogger(__FUNCTION__)
 				->addReference('stockUpdateCron', 'Stock')
-				->error('Etsy::item.stockUpdateError', $ex->getMessage());
+				->error('StockUPdatePlugin::stockUpdateError', $ex->getMessage());
 		}
 	}
 	public function update_stock($host)
