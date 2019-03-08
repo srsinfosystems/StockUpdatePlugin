@@ -23,9 +23,17 @@ class ContentController extends Controller
 
 	public function cgi_update_stock() {
 		$host = $_SERVER['HTTP_HOST'];
+
+		$login = $this->login($host);
+		$login = json_decode($login, true);
+		$this->access_token = $login['access_token'];
+		$this->plentyhost = "https://".$host;
+		$this->drophost = "https://www.brandsdistribution.com";
+
 		$this->update_stock($host);
 	}
 	public function cli_update_stock() {
+
 
 			$response = json_encode($_SERVER);
 			$this->getLogger(__FUNCTION__)
@@ -35,11 +43,7 @@ class ContentController extends Controller
 	public function update_stock($host)
 	{
 
-		$login = $this->login($host);
-		$login = json_decode($login, true);
-		$this->access_token = $login['access_token'];
-		$this->plentyhost = "https://".$host;
-		$this->drophost = "https://www.brandsdistribution.com";
+
 
 		$brands = $this->getBrands();
 
@@ -248,9 +252,15 @@ class ContentController extends Controller
 
 	public function login($host){
 
+
+		if(empty($host))
+			$url = "/rest/login";
+		else
+			$url = "https://".$host."/rest/login";
+
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
-		  CURLOPT_URL => "https://".$host."/rest/login",
+		  CURLOPT_URL => $url,
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
