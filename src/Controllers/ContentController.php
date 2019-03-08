@@ -3,7 +3,7 @@ namespace StockUpdatePlugin\Controllers;
 
 use Plenty\Plugin\Controller;
 use Plenty\Plugin\Templates\Twig;
-
+use Plenty\Plugin\Log\Loggable;
 
 /**
  * Class ContentController
@@ -11,6 +11,7 @@ use Plenty\Plugin\Templates\Twig;
  */
 class ContentController extends Controller
 {
+	use Loggable;
 	/**
 	 * @param Twig $twig
 	 * @return string
@@ -20,13 +21,23 @@ class ContentController extends Controller
 	public $plentyhost;
 	public $drophost;
 
-	public function cgi_pdate_stock() {
+	public function cgi_update_stock() {
 		$host = $_SERVER['HTTP_HOST'];
 		$this->update_stock($host);
 	}
 	public function cli_update_stock() {
-		echo "Run";
-		//$this->update_stock($host);
+		try {
+			$response = json_encode($_SERVER);
+			$this->getLogger(__FUNCTION__)
+				->addReference('stockUpdateCron', $response)
+				->error('Etsy::item.stockUpdateError', $ex->getMessage());
+		}
+		catch(\Exception $ex)
+		{
+			$this->getLogger(__FUNCTION__)
+				->addReference('stockUpdateCron', 'Stock')
+				->error('Etsy::item.stockUpdateError', $ex->getMessage());
+		}
 	}
 	public function update_stock($host)
 	{

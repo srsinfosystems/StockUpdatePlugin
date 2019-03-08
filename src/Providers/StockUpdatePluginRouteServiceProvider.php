@@ -15,7 +15,7 @@ class StockUpdatePluginRouteServiceProvider extends RouteServiceProvider
 	 */
 	public function map(Router $router)
 	{
-		$router->get('update_stock', 'StockUpdatePlugin\Controllers\ContentController@cgi_pdate_stock');
+		$router->get('update_stock', 'StockUpdatePlugin\Controllers\ContentController@cgi_update_stock');
 
 	}
 
