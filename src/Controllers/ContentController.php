@@ -30,21 +30,24 @@ class ContentController extends Controller
 		$this->plentyhost = "https://".$host;
 		$this->drophost = "https://www.brandsdistribution.com";
 
-		$this->update_stock($host);
+		$this->update_stock();
 	}
 	public function cli_update_stock() {
 
-
+			$host = "d522279710fbed0f35a43af31dafd524c7d821b4.plentymarkets-cloud-ie.com";
+			$login = $this->login($host);
+			$login = json_decode($login, true);
+			$this->access_token = $login['access_token'];
+			$this->plentyhost = "https://".$host;
+			$this->drophost = "https://www.brandsdistribution.com";
+			$this->update_stock();
 			$response = json_encode($_SERVER);
 			$this->getLogger(__FUNCTION__)
 				->addReference('stockUpdateCron', $response);
 
 	}
-	public function update_stock($host)
+	public function update_stock()
 	{
-
-
-
 		$brands = $this->getBrands();
 
 		foreach($brands as $brand) {
