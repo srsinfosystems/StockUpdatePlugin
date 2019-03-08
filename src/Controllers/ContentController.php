@@ -20,16 +20,24 @@ class ContentController extends Controller
 	public $plentyhost;
 	public $drophost;
 
-	public function update_stock()
-	{
+	public function cgi_pdate_stock() {
 		$host = $_SERVER['HTTP_HOST'];
+		$this->update_stock($host);
+	}
+	public function cli_update_stock() {
+		echo "Run";
+		//$this->update_stock($host);
+	}
+	public function update_stock($host)
+	{
+
 		$login = $this->login($host);
 		$login = json_decode($login, true);
 		$this->access_token = $login['access_token'];
 		$this->plentyhost = "https://".$host;
 		$this->drophost = "https://www.brandsdistribution.com";
 
-		$brands = array('Adidas','Bikkembergs','Converse','Desigual','Diadora','Diadora Heritage','Diesel','Elle Sport','Emporio Armani','Gant','Geographical Norway','Geox','Guess','Hugo Boss','Lacoste','Love Moschino','Moschino','Napapijri','New Balance','Nike','Ocean Sunglasses','Puma','Ralph Lauren','Ray-Ban','Saucony','Superga','TOMS','The North Face','Timberland','Tommy Hilfiger','U.S. Polo','Vans','Versace Jeans');
+		$brands = $this->getBrands();
 
 		foreach($brands as $brand) {
 			$manufacturerId = $this->getManufacturerId($brand);
@@ -263,6 +271,12 @@ class ContentController extends Controller
 		} else {
 		  return $response;
 		}
+	}
+
+	public function getBrands() {
+		$brands = array('Adidas','Bikkembergs','Coach','Converse','Desigual','Diadora','Diadora Heritage','Diesel','Emporio Armani','Gant','Geographical Norway','Geox','Guess','Hugo Boss','Lacoste','Love Moschino','Michael Kors','Napapijri','New Balance','Nike','Ocean Sunglasses','Puma','Ralph Lauren','Ray-Ban','Saucony','Superga','TOMS','The North Face','Timberland','Tommy Hilfiger','U.S. Polo','Vans','Versace Jeans');
+		return $brands;
+
 	}
 
 }
