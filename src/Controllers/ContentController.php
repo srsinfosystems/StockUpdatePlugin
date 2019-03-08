@@ -26,18 +26,11 @@ class ContentController extends Controller
 		$this->update_stock($host);
 	}
 	public function cli_update_stock() {
-		try {
+
 			$response = json_encode($_SERVER);
 			$this->getLogger(__FUNCTION__)
-				->addReference('stockUpdateCron', $response)
-				->error('Etsy::item.stockUpdateError', $ex->getMessage());
-		}
-		catch(Exception $ex)
-		{
-			$this->getLogger(__FUNCTION__)
-				->addReference('stockUpdateCron', 'Stock')
-				->error('StockUPdatePlugin::stockUpdateError', $ex->getMessage());
-		}
+				->addReference('stockUpdateCron', $response);
+
 	}
 	public function update_stock($host)
 	{
