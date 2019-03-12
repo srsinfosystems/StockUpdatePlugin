@@ -114,7 +114,7 @@ class ContentController extends Controller
 		$curl = curl_init();
 
 		curl_setopt_array($curl, array(
-		  CURLOPT_URL => $this->plentyhost."/rest/items/manufacturers?name=".$brand,
+		  CURLOPT_URL => $this->plentyhost."/rest/items/manufacturers?name=".urlencode($brand),
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
