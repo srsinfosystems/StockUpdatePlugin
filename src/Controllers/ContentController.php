@@ -20,6 +20,7 @@ class ContentController extends Controller
 	public $access_token;
 	public $plentyhost;
 	public $drophost;
+	public $variations;
 
 	public function cgi_update_stock() {
 		$host = $_SERVER['HTTP_HOST'];
@@ -49,14 +50,15 @@ class ContentController extends Controller
 		$brands = $this->getBrands();
 
 		foreach($brands as $brand) {
+			$this->variations = array();
 			if(empty($brand)) continue;
 			$manufacturerId = $this->getManufacturerId($brand);
 			if(empty($manufacturerId)) continue;
-			$variations = $this->getManufacturerVariations($manufacturerId);
-			if(empty($variations)) continue;
+			$this->getManufacturerVariations($manufacturerId,1);
+			if(empty($this->variations)) continue;
 
 			# get data of selected brand from dropshiper
-			$variationDrop = $this->variationDropShiper($brand, $variations);
+			$variationDrop = $this->variationDropShiper($brand);
 			$this->updateStock($variationDrop);
 
 
@@ -66,11 +68,11 @@ class ContentController extends Controller
 
 	}
 
-	public function getManufacturerVariations($manufacturerId) {
+	public function getManufacturerVariations($manufacturerId, $page) {
 
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
-		  CURLOPT_URL => $this->plentyhost."/rest/items/variations?manufacturerId=".$manufacturerId."&isActive=true&stockWarehouseId=104",
+		  CURLOPT_URL => $this->plentyhost."/rest/items/variations?manufacturerId=".$manufacturerId."&isActive=trueplentyId=42296&flagTwo=3&page=".$page,
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
@@ -93,13 +95,18 @@ class ContentController extends Controller
 		  echo "cURL Error #:" . $err;
 		} else {
 		  $response =json_decode($response,true);
-		  if(empty($response) || empty($response['entries'])) return;
-		  $variations = array();
-		  foreach($response['entries'] as $entries) {
-			  $number = $entries['number'];
-			$variations[$number] = $entries['id'];
+		  if(isset($response['entries']) && !empty($response['entries'])) {
+			  foreach($response['entries'] as $entries) {
+				$number = $entries['number'];
+				$this->variations[$number] = $entries['id'];
+			  }
 		  }
-		  return $variations;
+
+		}
+		 $last_page = $response['lastPageNumber'];
+		if($page != $last_page) {
+			$page++;
+			$this->getManufacturerVariations($manufacturerId, $page);
 		}
 	}
 	public function getManufacturerId($brand) {
@@ -138,11 +145,13 @@ class ContentController extends Controller
 		}
 	}
 
-	public function variationDropShiper($brand,$plentyVariations) {
+	public function variationDropShiper($brand) {
+		$checktime = strtotime("-30 mins");
+		$checktime = date("c", $checktime);
 
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
-		  CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand),
+		  CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand)."&since=".urlencode($checktime),
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
@@ -187,8 +196,8 @@ class ContentController extends Controller
 						$id = $model['id'];
 						//if($last_updated <= $checktime) {
 							# find relevant variation in plenty
-							if(array_key_exists($id, $plentyVariations)) {
-								$plentyId = $plentyVariations[$id];
+							if(array_key_exists($id, $this->variations)) {
+								$plentyId = $this->variations[$id];
 								$temp = array (
 									'variation_id' => $plentyId,
 									'drop_id' => $id,
