@@ -12,7 +12,7 @@ use StockUpdatePlugin\Crons\StockUpdateCron;
 class StockUpdatePluginServiceProvider extends ServiceProvider
 {
 	public function boot(CronContainer $container) {
-		$container->add(CronContainer::EVERY_FIFTEEN_MINUTES, StockUpdateCron::class);
+		$container->add(CronContainer::HOURLY, StockUpdateCron::class);
 	}
 	public function register()
 	{
