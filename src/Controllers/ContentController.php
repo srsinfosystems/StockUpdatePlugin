@@ -92,12 +92,12 @@ class ContentController extends Controller
 		$xml = simplexml_load_string($response);
 		$json = json_encode($xml);
 		$array = json_decode($json,TRUE);
-		echo json_encode($array);
+		//echo json_encode($array);
 		if(empty($array['items']['item'])) return "";
 		 if (is_array($array['items']['item'])) {
 				$stock = array();
 		        foreach ($array['items']['item'] as $items) {
-					$code = $items['code'];
+					$code = $items['name'];
 					$description = html_entity_decode($items['description']);
 					$plentyItems = $this->getPlentyItem($code);
 					if(empty($plentyItems)) continue;
@@ -112,7 +112,7 @@ class ContentController extends Controller
 		$curl = curl_init();
 
 	  curl_setopt_array($curl, array(
-	  CURLOPT_URL => $this->plentyhost."/rest/items/?name=".urlencode($name),
+	  CURLOPT_URL => $this->plentyhost."/rest/items/?flagTwo=3&name=".urlencode($name),
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_MAXREDIRS => 10,
