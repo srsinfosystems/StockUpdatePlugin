@@ -102,7 +102,7 @@ class ContentController extends Controller
 					$description = html_entity_decode($items['description']);
 					$plentyItems = $this->getPlentyItem($code);
 					if(empty($plentyItems)) continue;
-					$this->ItemDiscription($plentyItems['item_id'], $plentyItems['variationId'], $discription);
+					$this->ItemDiscription($plentyItems['item_id'], $plentyItems['variationId'], $description);
 		        } #
 		        
 		  }
