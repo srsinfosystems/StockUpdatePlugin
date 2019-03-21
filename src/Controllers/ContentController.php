@@ -31,7 +31,7 @@ class ContentController extends Controller
 		$this->plentyhost = "https://".$host;
 		$this->drophost = "https://www.brandsdistribution.com";
 
-		$this->update_stock('Adidas');
+		$this->ui_update_stock('Adidas');
 	}
 	public function cli_update_stock() {
 			exit;
@@ -45,19 +45,18 @@ class ContentController extends Controller
 
 
 	}
-	public function update_stock($brand = "")
+	public function ui_update_stock($brand) {
+		$this->variationDropShiper($brand);
+	}
+	public function update_stock()
 	{
-		if(!empty($brand)) {
-			$this->variationDropShiper($brand);
-		}
-		else {
+		
 		$brands = $this->getBrands();
 		foreach($brands as $brand) {
 			
 			$this->variationDropShiper($brand);
 
 		}
-	}
 		exit;
 
 	}
@@ -93,7 +92,7 @@ class ContentController extends Controller
 		$xml = simplexml_load_string($response);
 		$json = json_encode($xml);
 		$array = json_decode($json,TRUE);
-
+		print_r($array);
 		if(empty($array['items']['item'])) return "";
 		 if (is_array($array['items']['item'])) {
 				$stock = array();
