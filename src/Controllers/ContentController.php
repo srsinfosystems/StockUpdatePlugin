@@ -31,7 +31,13 @@ class ContentController extends Controller
 		$this->plentyhost = "https://".$host;
 		$this->drophost = "https://www.brandsdistribution.com";
 
-		$this->ui_update_stock('Adidas');
+		$brands = $this->getBrands();
+		foreach($brands as $brand) {
+			$this->ui_update_stock($brand);
+			sleep(60);
+		}
+		echo $brand;
+		
 	}
 	public function cli_update_stock() {
 			exit;
