@@ -92,7 +92,7 @@ class ContentController extends Controller
 		$xml = simplexml_load_string($response);
 		$json = json_encode($xml);
 		$array = json_decode($json,TRUE);
-		print_r($array);
+		echo json_encode($array);
 		if(empty($array['items']['item'])) return "";
 		 if (is_array($array['items']['item'])) {
 				$stock = array();
