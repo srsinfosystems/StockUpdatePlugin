@@ -9,7 +9,7 @@ use Plenty\Plugin\Log\Loggable;
  * Class ContentController
  * @package StockUpdatePlugin\Controllers
  */
-class ContentController extends Controller
+class ContentController  extends Controller
 {
 	use Loggable;
 	/**
@@ -31,16 +31,10 @@ class ContentController extends Controller
 		$this->plentyhost = "https://".$host;
 		$this->drophost = "https://www.brandsdistribution.com";
 
-		$brands = $this->getBrands();
-		foreach($brands as $brand) {
-			$this->ui_update_stock($brand);
-			sleep(60);
-		}
-		echo $brand;
-		
+		$this->update_stock();
 	}
 	public function cli_update_stock() {
-			exit;
+
 			$host = "joiurjeuiklb.plentymarkets-cloud02.com";
 			$login = $this->login($host);
 			$login = json_decode($login, true);
@@ -51,28 +45,114 @@ class ContentController extends Controller
 
 
 	}
-	public function ui_update_stock($brand) {
-		$this->variationDropShiper($brand);
-	}
 	public function update_stock()
 	{
-		
 		$brands = $this->getBrands();
+
 		foreach($brands as $brand) {
-			
-			$this->variationDropShiper($brand);
+			$this->variations = array();
+			if(empty($brand)) continue;
+			$manufacturerId = $this->getManufacturerId($brand);
+			if(empty($manufacturerId)) continue;
+			$this->getManufacturerVariations($manufacturerId,1);
+			if(empty($this->variations)) continue;
+
+			# get data of selected brand from dropshiper
+			$variationDrop = $this->variationDropShiper($brand);
+			$this->updateStock($variationDrop);
+
 
 		}
+		//echo "Stock Updated.";
 		exit;
 
 	}
+
+	public function getManufacturerVariations($manufacturerId, $page) {
+
+		$curl = curl_init();
+		curl_setopt_array($curl, array(
+		  CURLOPT_URL => $this->plentyhost."/rest/items/variations?manufacturerId=".$manufacturerId."&isActive=trueplentyId=42296&flagTwo=3&page=".$page,
+		  CURLOPT_RETURNTRANSFER => true,
+		  CURLOPT_ENCODING => "",
+		  CURLOPT_MAXREDIRS => 10,
+		  CURLOPT_TIMEOUT => 30,
+		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		  CURLOPT_CUSTOMREQUEST => "GET",
+		  CURLOPT_HTTPHEADER => array(
+		    "authorization: Bearer ".$this->access_token,
+		    "cache-control: no-cache",
+		    "content-type: application/json",
+		  ),
+		));
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+
+		if ($err) {
+		  echo "cURL Error #:" . $err;
+		} else {
+		  $response =json_decode($response,true);
+		  if(isset($response['entries']) && !empty($response['entries'])) {
+			  foreach($response['entries'] as $entries) {
+				$number = $entries['number'];
+				$this->variations[$number] = $entries['id'];
+			  }
+		  }
+
+		}
+		 $last_page = $response['lastPageNumber'];
+		if($page != $last_page) {
+			$page++;
+			$this->getManufacturerVariations($manufacturerId, $page);
+		}
+	}
+	public function getManufacturerId($brand) {
+
+		$curl = curl_init();
+
+		curl_setopt_array($curl, array(
+		  CURLOPT_URL => $this->plentyhost."/rest/items/manufacturers?name=".urlencode($brand),
+		  CURLOPT_RETURNTRANSFER => true,
+		  CURLOPT_ENCODING => "",
+		  CURLOPT_MAXREDIRS => 10,
+		  CURLOPT_TIMEOUT => 30,
+		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		  CURLOPT_CUSTOMREQUEST => "GET",
+		  CURLOPT_HTTPHEADER => array(
+		    "authorization: Bearer ".$this->access_token,
+		    "cache-control: no-cache",
+		    "content-type: application/json",
+		  ),
+		));
+
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+
+		curl_close($curl);
+
+		if ($err) {
+		  echo "cURL Error #:" . $err;
+		} else {
+
+		  $response =json_decode($response,true);
+		  if(!empty($response) && isset($response['entries'][0]['id']))
+			return $response['entries'][0]['id'];
+		  else
+			return "";
+		}
+	}
+
 	public function variationDropShiper($brand) {
 		$checktime = strtotime("-30 mins");
 		$checktime = date("c", $checktime);
 
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
-		  CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&acceptedlocales=en_US&tag_1=".urlencode($brand),
+		  //CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand)."&since=".urlencode($checktime),
+		  CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand),
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
@@ -98,91 +178,90 @@ class ContentController extends Controller
 		$xml = simplexml_load_string($response);
 		$json = json_encode($xml);
 		$array = json_decode($json,TRUE);
-		//echo json_encode($array);
+
 		if(empty($array['items']['item'])) return "";
 		 if (is_array($array['items']['item'])) {
 				$stock = array();
 		        foreach ($array['items']['item'] as $items) {
-					$code = $items['name'];
-					$description = html_entity_decode($items['description']);
-					$plentyItems = $this->getPlentyItem($code);
-					if(empty($plentyItems)) continue;
-					$this->ItemDiscription($plentyItems['item_id'], $plentyItems['variationId'], $description);
+					if(isset($items['models']['model'][0]['availability'])) {
+					$drop_models = $items['models']['model'];
+					}
+					else if(!empty($items['models']['model'])) {
+						$drop_models[] = $items['models']['model'];
+					}
+					if(empty($drop_models)) continue;
+					foreach($drop_models as $model) {
+						$last_updated = $model['lastUpdate'];
+						$checktime = strtotime("-20 mins");
+						$checktime = date("c", $checktime);
+						$id = $model['id'];
+						//if($last_updated <= $checktime) {
+							# find relevant variation in plenty
+							if(array_key_exists($id, $this->variations)) {
+								$plentyId = $this->variations[$id];
+								$temp = array (
+									'variation_id' => $plentyId,
+									'drop_id' => $id,
+									'availability' => $model['availability'],
+
+								);
+								$stock[] = $temp;
+							}
+						//}
+					}
+
 		        } #
-		        
+		        return $stock;
 		  }
 		}
 	}
-	
-	public function getPlentyItem($name) {
+
+	public function updateStock($variations) {
+
+		$correcttions['corrections'] = array();
+	    foreach($variations as $variation) {
+			$temp = array (
+			'variationId' => $variation['variation_id'],
+			'reasonId' => 301,
+			'quantity' => $variation['availability'],
+			'storageLocationId' => 0
+			);
+			array_push($correcttions['corrections'],$temp);
+		}
+		$stock_values =  json_encode($correcttions);
+
+
 		$curl = curl_init();
 
-	  curl_setopt_array($curl, array(
-	  CURLOPT_URL => $this->plentyhost."/rest/items/?flagTwo=3&name=".urlencode($name),
-	  CURLOPT_RETURNTRANSFER => true,
-	  CURLOPT_ENCODING => "",
-	  CURLOPT_MAXREDIRS => 10,
-	  CURLOPT_TIMEOUT => 9000000,
-	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-	  CURLOPT_CUSTOMREQUEST => "GET",
-	  CURLOPT_HTTPHEADER => array(
-		"authorization: Bearer ".$this->access_token,
-		"cache-control: no-cache",
-		"content-type: application/json",
-	  ),
-	));
+		curl_setopt_array($curl, array(
+		  CURLOPT_URL => $this->plentyhost."/rest/stockmanagement/warehouses/104/stock/correction",
+		  CURLOPT_RETURNTRANSFER => true,
+		  CURLOPT_ENCODING => "",
+		  CURLOPT_MAXREDIRS => 10,
+		  CURLOPT_TIMEOUT => 30,
+		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		  CURLOPT_CUSTOMREQUEST => "PUT",
+		  CURLOPT_POSTFIELDS => "$stock_values",
+		  CURLOPT_HTTPHEADER => array(
+		    "authorization: Bearer ".$this->access_token,
+		    "cache-control: no-cache",
+		    "content-type: application/json",
+		  ),
+		));
 
-	$response = curl_exec($curl);
-	$err = curl_error($curl);
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
 
-	curl_close($curl);
+		curl_close($curl);
 
-	if ($err) {
-	  echo "cURL Error #:" . $err;
-	} else {
-	 // echo $response;
-	  $response =json_decode($response,true);
-	  if(!empty($response) && isset($response['entries'][0]['id'])) {
-		  return array('item_id' => $response['entries'][0]['id'], 'variationId' => $response['entries'][0]['mainVariationId']);
-	  }
-	  else {
-		  return "";
-	  }
-		
+		if ($err) {
+		  echo "cURL Error #:" . $err;
+		} else {
+		  //echo $response;
+		  //echo "Updated successfully";
+		}
 	}
-	}
-	public function ItemDiscription($itemId, $variationId, $discription){
 
-	    $curl = curl_init();
-
-	    curl_setopt_array($curl, array(
-	      CURLOPT_URL => $this->plentyhost."/rest/items/".$itemId."/variations/".$variationId."/descriptions/en",
-	      CURLOPT_RETURNTRANSFER => true,
-	      CURLOPT_ENCODING => "",
-	      CURLOPT_MAXREDIRS => 10,
-	      CURLOPT_TIMEOUT => 900000000,
-	      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-	      CURLOPT_CUSTOMREQUEST => "PUT",
-	      CURLOPT_POSTFIELDS => "{\"itemId\": $itemId,\"lang\": \"en\",\"description\": \"$discription\"}",
-	      CURLOPT_HTTPHEADER => array(
-	        "authorization: Bearer ".$this->access_token,
-	        "cache-control: no-cache",
-	        "content-type: application/json"
-	      ),
-	    ));
-
-	    $response = curl_exec($curl);
-	    $err = curl_error($curl);
-
-	    curl_close($curl);
-
-	    if ($err) {
-	      return "cURL Error #:" . $err;
-	    } else {
-			//echo $response;
-	      return $response;
-	    }
-	}
 	public function login($host){
 
 
