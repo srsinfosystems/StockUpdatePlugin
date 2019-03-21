@@ -134,7 +134,7 @@ class ContentController extends Controller
 	if ($err) {
 	  echo "cURL Error #:" . $err;
 	} else {
-	  echo $response;
+	 // echo $response;
 	  $response =json_decode($response,true);
 	  if(!empty($response) && isset($response['entries'][0]['id'])) {
 		  return array('item_id' => $response['entries'][0]['id'], 'variationId' => $response['entries'][0]['mainVariationId']);
@@ -173,7 +173,7 @@ class ContentController extends Controller
 	    if ($err) {
 	      return "cURL Error #:" . $err;
 	    } else {
-			echo $response;
+			//echo $response;
 	      return $response;
 	    }
 	}
