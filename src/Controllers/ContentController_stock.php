@@ -9,7 +9,7 @@ use Plenty\Plugin\Log\Loggable;
  * Class ContentController
  * @package StockUpdatePlugin\Controllers
  */
-class ContentController extends Controller
+class ContentController_stock extends Controller
 {
 	use Loggable;
 	/**
