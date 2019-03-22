@@ -201,7 +201,7 @@ class ContentController  extends Controller
 						$id = $model['id'];
 						//if($last_updated <= $checktime) {
 							# find relevant variation in plenty
-							if(array_key_exists($id, $this->variations)) {
+							if(array_key_exists($id, $this->variations) || array_key_exists($id."_1", $this->variations)) {
 								$plentyId = $this->variations[$id];
 								$temp = array (
 									'variation_id' => $plentyId,
