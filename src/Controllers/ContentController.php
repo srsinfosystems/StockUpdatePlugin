@@ -24,14 +24,14 @@ class ContentController  extends Controller
 
 	public function cgi_update_stock() {
 		$host = $_SERVER['HTTP_HOST'];
-
+		$brand = $_GET['brand'];
 		$login = $this->login($host);
 		$login = json_decode($login, true);
 		$this->access_token = $login['access_token'];
 		$this->plentyhost = "https://".$host;
 		$this->drophost = "https://www.brandsdistribution.com";
 
-		$this->update_stock();
+		$this->update_stock($brand);
 	}
 	public function cli_update_stock() {
 
@@ -41,13 +41,16 @@ class ContentController  extends Controller
 			$this->access_token = $login['access_token'];
 			$this->plentyhost = "https://".$host;
 			$this->drophost = "https://www.brandsdistribution.com";
-			$this->update_stock();
+			$this->update_stock('');
 
 
 	}
-	public function update_stock()
+	public function update_stock($brand)
 	{
-		$brands = $this->getBrands();
+		if(!empty($brand))
+			$brands[] = $brand;
+		else
+			$brands = $this->getBrands();
 
 		foreach($brands as $brand) {
 			$this->variations = array();
