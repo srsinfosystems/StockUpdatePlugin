@@ -65,7 +65,7 @@ class ContentController  extends Controller
 			//echo json_encode($variationDrop);
 			$this->updateStock($variationDrop);
 
-			sleep(30);
+			//sleep(30);
 
 		}
 		//echo "Stock Updated.";
@@ -151,13 +151,13 @@ class ContentController  extends Controller
 	}
 
 	public function variationDropShiper($brand) {
-		$checktime = strtotime("-30 mins");
+		$checktime = strtotime("-20 mins");
 		$checktime = date("c", $checktime);
 
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
-		  //CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand)."&since=".urlencode($checktime),
-		  CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand),
+		  CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand)."&since=".urlencode($checktime),
+		  //CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand),
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
