@@ -77,7 +77,7 @@ class ContentController  extends Controller
 
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
-		  CURLOPT_URL => $this->plentyhost."/rest/items/variations?manufacturerId=".$manufacturerId."&isActive=trueplentyId=42296&page=".$page,
+		  CURLOPT_URL => $this->plentyhost."/rest/items/variations?manufacturerId=".$manufacturerId."&isActive=true&plentyId=42296&page=".$page,
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
