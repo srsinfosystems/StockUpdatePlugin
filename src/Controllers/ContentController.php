@@ -24,7 +24,7 @@ class ContentController  extends Controller
 
 	public function cgi_update_stock() {
 		$host = $_SERVER['HTTP_HOST'];
-		$brand = $_GET['brand'];
+		$brand = isset($_GET['brand'])?$_GET['brand']:'';
 		$login = $this->login($host);
 		$login = json_decode($login, true);
 		$this->access_token = $login['access_token'];
@@ -59,12 +59,13 @@ class ContentController  extends Controller
 			if(empty($manufacturerId)) continue;
 			$this->getManufacturerVariations($manufacturerId,1);
 			if(empty($this->variations)) continue;
-			echo json_encode($this->variations);
+			//echo json_encode($this->variations);
 			# get data of selected brand from dropshiper
 			$variationDrop = $this->variationDropShiper($brand);
-			echo json_encode($variationDrop);
+			//echo json_encode($variationDrop);
 			$this->updateStock($variationDrop);
 
+			sleep(30);
 
 		}
 		//echo "Stock Updated.";
