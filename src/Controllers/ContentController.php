@@ -59,9 +59,10 @@ class ContentController  extends Controller
 			if(empty($manufacturerId)) continue;
 			$this->getManufacturerVariations($manufacturerId,1);
 			if(empty($this->variations)) continue;
-
+			echo json_encode($this->variations);
 			# get data of selected brand from dropshiper
 			$variationDrop = $this->variationDropShiper($brand);
+			echo json_encode($variationDrop);
 			$this->updateStock($variationDrop);
 
 
