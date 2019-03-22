@@ -80,7 +80,7 @@ class ContentController  extends Controller
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
-		  CURLOPT_TIMEOUT => 30,
+		  CURLOPT_TIMEOUT => 90000000,
 		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 		  CURLOPT_CUSTOMREQUEST => "GET",
 		  CURLOPT_HTTPHEADER => array(
@@ -122,7 +122,7 @@ class ContentController  extends Controller
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
-		  CURLOPT_TIMEOUT => 30,
+		  CURLOPT_TIMEOUT => 9000000,
 		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 		  CURLOPT_CUSTOMREQUEST => "GET",
 		  CURLOPT_HTTPHEADER => array(
@@ -201,8 +201,18 @@ class ContentController  extends Controller
 						$id = $model['id'];
 						//if($last_updated <= $checktime) {
 							# find relevant variation in plenty
-							if(array_key_exists($id, $this->variations) || array_key_exists($id."_1", $this->variations)) {
+							if(array_key_exists($id, $this->variations)) {
 								$plentyId = $this->variations[$id];
+								$temp = array (
+									'variation_id' => $plentyId,
+									'drop_id' => $id,
+									'availability' => $model['availability'],
+
+								);
+								$stock[] = $temp;
+							}
+							else if(array_key_exists($id."_1", $this->variations)) {
+								$plentyId = $this->variations[$id."_1"];
 								$temp = array (
 									'variation_id' => $plentyId,
 									'drop_id' => $id,
@@ -242,7 +252,7 @@ class ContentController  extends Controller
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
-		  CURLOPT_TIMEOUT => 30,
+		  CURLOPT_TIMEOUT => 90000000,
 		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 		  CURLOPT_CUSTOMREQUEST => "PUT",
 		  CURLOPT_POSTFIELDS => "$stock_values",
@@ -312,7 +322,7 @@ class ContentController  extends Controller
 	  CURLOPT_RETURNTRANSFER => true,
 	  CURLOPT_ENCODING => "",
 	  CURLOPT_MAXREDIRS => 10,
-	  CURLOPT_TIMEOUT => 30,
+	  CURLOPT_TIMEOUT => 9000000,
 	  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 	  CURLOPT_CUSTOMREQUEST => "GET",
 	  CURLOPT_HTTPHEADER => array(
