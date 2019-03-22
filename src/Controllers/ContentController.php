@@ -47,10 +47,14 @@ class ContentController  extends Controller
 	}
 	public function update_stock($brand)
 	{
-		if(!empty($brand))
+		$print = "n";
+		if(!empty($brand)) {
+			$print = "y";
 			$brands[] = $brand;
-		else
+		}
+		else {
 			$brands = $this->getBrands();
+		}
 
 		foreach($brands as $brand) {
 			$this->variations = array();
@@ -59,10 +63,14 @@ class ContentController  extends Controller
 			if(empty($manufacturerId)) continue;
 			$this->getManufacturerVariations($manufacturerId,1);
 			if(empty($this->variations)) continue;
-			//echo json_encode($this->variations);
+			if($print == "y") {
+				echo json_encode($this->variations);
+			}
 			# get data of selected brand from dropshiper
 			$variationDrop = $this->variationDropShiper($brand);
-			//echo json_encode($variationDrop);
+			if($print == "y") {
+				echo json_encode($variationDrop);
+			}
 			$this->updateStock($variationDrop);
 
 			//sleep(30);
@@ -156,8 +164,8 @@ class ContentController  extends Controller
 
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
-		  CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand)."&since=".urlencode($checktime),
-		  //CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand),
+		 // CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand)."&since=".urlencode($checktime),
+		 CURLOPT_URL => $this->drophost."/restful/export/api/products.xml?Accept=application%2Fxml&tag_1=".urlencode($brand),
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
