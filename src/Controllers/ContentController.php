@@ -74,7 +74,6 @@ class ContentController  extends Controller
 			
 			if($print == "y") {
 				echo json_encode($variationDrop);
-				echo "<BR>===========";
 				echo json_encode($this->NoStockVariations);
 			}
 			$this->updateStock($variationDrop);
