@@ -69,12 +69,11 @@ class ContentController  extends Controller
 			if($print == "y") {
 				echo json_encode($this->variations);
 			}
-			echo json_encode($this->NoStockVariations);
-			exit;
+			
 			# get data of selected brand from dropshiper
 			$variationDrop = $this->variationDropShiper($brand);
 			
-			/*
+			
 			if(!empty($this->NoStockVariations)) {
 				foreach($this->NoStockVariations as $k=>$v) {
 					$temp = array (
@@ -84,7 +83,7 @@ class ContentController  extends Controller
 					);
 					$variationDrop[] = $temp;
 				}
-			}*/
+			}
 			
 			if($print == "y") {
 				echo json_encode($variationDrop);
@@ -341,7 +340,7 @@ class ContentController  extends Controller
 		if ($err) {
 		  return "cURL Error #:" . $err;
 		} else {
-			echo $response;
+			//echo $response;
 		  return $response;
 		}
 	}
