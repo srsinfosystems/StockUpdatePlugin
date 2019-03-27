@@ -60,10 +60,10 @@ class ContentController  extends Controller
 		foreach($brands as $brand) {
 			$this->NoStockVariations = $this->variations = array();
 			if(empty($brand)) continue;
-			$manufacturerId = $this->getManufacturerId($brand);
+			echo $manufacturerId = $this->getManufacturerId($brand);
 			if(empty($manufacturerId)) continue;
 			$this->getManufacturerVariations($manufacturerId,1, 3);
-			$this->getManufacturerVariations($manufacturerId,1, 1);
+			//$this->getManufacturerVariations($manufacturerId,1, 1);
 			if(empty($this->variations)) continue;
 			$this->NoStockVariations = $this->variations;
 			if($print == "y") {
