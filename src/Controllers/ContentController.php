@@ -62,7 +62,7 @@ class ContentController  extends Controller
 			if(empty($brand)) continue;
 			$manufacturerId = $this->getManufacturerId($brand);
 			if(empty($manufacturerId)) continue;
-			//$this->getManufacturerVariations($manufacturerId,1, 3);
+			$this->getManufacturerVariations($manufacturerId,1, 3);
 			$this->getManufacturerVariations($manufacturerId,1, 1);
 			if(empty($this->variations)) continue;
 			$this->NoStockVariations = $this->variations;
@@ -114,9 +114,6 @@ class ContentController  extends Controller
 		  echo "cURL Error #:" . $err;
 		} else {
 		  $response =json_decode($response,true); 
-		  //if($print == "y") {
-		  echo json_encode($response); exit;
-		//}
 		  if(isset($response['entries']) && !empty($response['entries'])) {
 			  foreach($response['entries'] as $entries) {
 				if($entries['isMain'] == true) continue;
