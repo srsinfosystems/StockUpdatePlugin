@@ -21,7 +21,8 @@ class ContentController  extends Controller
 	public $plentyhost;
 	public $drophost;
 	public $variations;
-
+	public $NoStockVariations;
+	
 	public function cgi_update_stock() {
 		$host = $_SERVER['HTTP_HOST'];
 		$brand = isset($_GET['brand'])?$_GET['brand']:'';
@@ -63,11 +64,15 @@ class ContentController  extends Controller
 			if(empty($manufacturerId)) continue;
 			$this->getManufacturerVariations($manufacturerId,1);
 			if(empty($this->variations)) continue;
+			$this->NoStockVariations = $this->variations;
 			if($print == "y") {
 				echo json_encode($this->variations);
+				echo "<br>================";
+				echo json_encode($this->NoStockVariations);
 			}
 			# get data of selected brand from dropshiper
 			$variationDrop = $this->variationDropShiper($brand);
+			
 			if($print == "y") {
 				echo json_encode($variationDrop);
 			}
@@ -211,6 +216,7 @@ class ContentController  extends Controller
 						//if($last_updated <= $checktime) {
 							# find relevant variation in plenty
 							if(array_key_exists($id, $this->variations)) {
+								unset($this->NoStockVariations[$id]);
 								$plentyId = $this->variations[$id];
 								$temp = array (
 									'variation_id' => $plentyId,
@@ -221,6 +227,7 @@ class ContentController  extends Controller
 								$stock[] = $temp;
 							}
 							else if(array_key_exists($id."_1", $this->variations)) {
+								unset($this->NoStockVariations[$id."_1"]);
 								$plentyId = $this->variations[$id."_1"];
 								$temp = array (
 									'variation_id' => $plentyId,
