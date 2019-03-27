@@ -63,7 +63,7 @@ class ContentController  extends Controller
 			$manufacturerId = $this->getManufacturerId($brand);
 			if(empty($manufacturerId)) continue;
 			$this->getManufacturerVariations($manufacturerId,1, 3);
-			//$this->getManufacturerVariations($manufacturerId,1, 1);
+			$this->getManufacturerVariations($manufacturerId,1, 1);
 			if(empty($this->variations)) continue;
 			$this->NoStockVariations = $this->variations;
 			if($print == "y") {
@@ -71,11 +71,21 @@ class ContentController  extends Controller
 			}
 			# get data of selected brand from dropshiper
 			$variationDrop = $this->variationDropShiper($brand);
+			if(!empty($this->NoStockVariations)) {
+				foreach($this->NoStockVariations as $k=>$v) {
+					$temp = array (
+						'variation_id' => $v,
+						'availability' => 0,
+
+					);
+					$variationDrop[] = $temp;
+				}
+			}
 			
 			if($print == "y") {
 				echo json_encode($variationDrop);
-				echo json_encode($this->NoStockVariations);
 			}
+			
 			$this->updateStock($variationDrop);
 
 			//sleep(30);
@@ -112,7 +122,7 @@ class ContentController  extends Controller
 		if ($err) {
 		  echo "cURL Error #:" . $err;
 		} else {
-			echo $response;
+			//echo $response;
 		  $response =json_decode($response,true); 
 		  if(isset($response['entries']) && !empty($response['entries'])) {
 			  foreach($response['entries'] as $entries) {
@@ -327,7 +337,7 @@ class ContentController  extends Controller
 		if ($err) {
 		  return "cURL Error #:" . $err;
 		} else {
-			echo $response;
+			//echo $response;
 		  return $response;
 		}
 	}
