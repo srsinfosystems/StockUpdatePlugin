@@ -62,7 +62,8 @@ class ContentController  extends Controller
 			if(empty($brand)) continue;
 			$manufacturerId = $this->getManufacturerId($brand);
 			if(empty($manufacturerId)) continue;
-			$this->getManufacturerVariations($manufacturerId,1);
+			//$this->getManufacturerVariations($manufacturerId,1, 3);
+			$this->getManufacturerVariations($manufacturerId,1, 1);
 			if(empty($this->variations)) continue;
 			$this->NoStockVariations = $this->variations;
 			if($print == "y") {
@@ -86,11 +87,11 @@ class ContentController  extends Controller
 
 	}
 
-	public function getManufacturerVariations($manufacturerId, $page) {
+	public function getManufacturerVariations($manufacturerId, $page, $flag) {
 
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
-		  CURLOPT_URL => $this->plentyhost."/rest/items/variations?manufacturerId=".$manufacturerId."&isActive=true&plentyId=42296&page=".$page,
+		  CURLOPT_URL => $this->plentyhost."/rest/items/variations?manufacturerId=".$manufacturerId."&isActive=true&plentyId=42296&flagTwo=".$flag."&page=".$page,
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
@@ -118,6 +119,7 @@ class ContentController  extends Controller
 		//}
 		  if(isset($response['entries']) && !empty($response['entries'])) {
 			  foreach($response['entries'] as $entries) {
+				if($entries['isMain'] == true) continue;
 				$number = $entries['number'];
 				$this->variations[$number] = $entries['id'];
 			  }
@@ -127,7 +129,7 @@ class ContentController  extends Controller
 		 $last_page = $response['lastPageNumber'];
 		if($page != $last_page) {
 			$page++;
-			$this->getManufacturerVariations($manufacturerId, $page);
+			$this->getManufacturerVariations($manufacturerId, $page, $flag);
 		}
 	}
 	public function getManufacturerId($brand) {
