@@ -112,7 +112,7 @@ class ContentController  extends Controller
 		if ($err) {
 		  echo "cURL Error #:" . $err;
 		} else {
-		  $response =json_decode($response,true);
+		 echo $response =json_decode($response,true); exit;
 		  if(isset($response['entries']) && !empty($response['entries'])) {
 			  foreach($response['entries'] as $entries) {
 				$number = $entries['number'];
