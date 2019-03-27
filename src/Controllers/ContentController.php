@@ -341,7 +341,7 @@ class ContentController  extends Controller
 		if ($err) {
 		  return "cURL Error #:" . $err;
 		} else {
-			//echo $response;
+			echo $response;
 		  return $response;
 		}
 	}
