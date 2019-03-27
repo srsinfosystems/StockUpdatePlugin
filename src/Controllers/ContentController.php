@@ -71,6 +71,8 @@ class ContentController  extends Controller
 			}
 			# get data of selected brand from dropshiper
 			$variationDrop = $this->variationDropShiper($brand);
+			echo json_encode($this->NoStockVariations);
+			/*
 			if(!empty($this->NoStockVariations)) {
 				foreach($this->NoStockVariations as $k=>$v) {
 					$temp = array (
@@ -80,7 +82,7 @@ class ContentController  extends Controller
 					);
 					$variationDrop[] = $temp;
 				}
-			}
+			}*/
 			
 			if($print == "y") {
 				echo json_encode($variationDrop);
