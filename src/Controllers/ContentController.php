@@ -35,7 +35,7 @@ class ContentController  extends Controller
 		$this->update_stock($brand);
 	}
 	public function cli_update_stock() {
-
+			exit;
 			$host = "joiurjeuiklb.plentymarkets-cloud02.com";
 			$login = $this->login($host);
 			$login = json_decode($login, true);
@@ -327,6 +327,7 @@ class ContentController  extends Controller
 		if ($err) {
 		  return "cURL Error #:" . $err;
 		} else {
+			echo $response;
 		  return $response;
 		}
 	}
