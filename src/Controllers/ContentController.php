@@ -69,9 +69,11 @@ class ContentController  extends Controller
 			if($print == "y") {
 				echo json_encode($this->variations);
 			}
+			echo json_encode($this->NoStockVariations);
+			exit;
 			# get data of selected brand from dropshiper
 			$variationDrop = $this->variationDropShiper($brand);
-			echo json_encode($this->NoStockVariations);
+			
 			/*
 			if(!empty($this->NoStockVariations)) {
 				foreach($this->NoStockVariations as $k=>$v) {
