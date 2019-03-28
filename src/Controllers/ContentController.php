@@ -62,8 +62,8 @@ class ContentController  extends Controller
 			if(empty($brand)) continue;
 			$manufacturerId = $this->getManufacturerId($brand);
 			if(empty($manufacturerId)) continue;
-			$this->getManufacturerVariations($manufacturerId,1, 3);
-			$this->getManufacturerVariations($manufacturerId,1, 1);
+			$this->getManufacturerVariations($manufacturerId,1);
+			//$this->getManufacturerVariations($manufacturerId,1, 1);
 			if(empty($this->variations)) continue;
 			$this->NoStockVariations = $this->variations;
 			if($print == "y") {
@@ -100,15 +100,15 @@ class ContentController  extends Controller
 
 	}
 
-	public function getManufacturerVariations($manufacturerId, $page, $flag) {
+	public function getManufacturerVariations($manufacturerId, $page) {
 
 		$curl = curl_init();
 		curl_setopt_array($curl, array(
-		  CURLOPT_URL => $this->plentyhost."/rest/items/variations?manufacturerId=".$manufacturerId."&isActive=true&plentyId=42296&flagTwo=".$flag."&page=".$page,
+		  CURLOPT_URL => $this->plentyhost."/rest/items/variations?manufacturerId=".$manufacturerId."&isActive=true&plentyId=42296&page=".$page,
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
-		  CURLOPT_TIMEOUT => 30,
+		  CURLOPT_TIMEOUT => 100,
 		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 		  CURLOPT_CUSTOMREQUEST => "GET",
 		  CURLOPT_HTTPHEADER => array(
@@ -130,7 +130,7 @@ class ContentController  extends Controller
 		  $response =json_decode($response,true); 
 		  if(isset($response['entries']) && !empty($response['entries'])) {
 			  foreach($response['entries'] as $entries) {
-				if($entries['isMain'] == true) continue;
+				//if($entries['isMain'] == true) continue;
 				$number = $entries['number'];
 				$this->variations[$number] = $entries['id'];
 			  }
@@ -140,7 +140,7 @@ class ContentController  extends Controller
 		 $last_page = $response['lastPageNumber'];
 		if($page != $last_page) {
 			$page++;
-			$this->getManufacturerVariations($manufacturerId, $page, $flag);
+			$this->getManufacturerVariations($manufacturerId, $page);
 		}
 	}
 	public function getManufacturerId($brand) {
@@ -170,7 +170,7 @@ class ContentController  extends Controller
 		if ($err) {
 		  echo "cURL Error #:" . $err;
 		} else {
-
+			echo $response; exit;
 		  $response =json_decode($response,true);
 		  if(!empty($response) && isset($response['entries'][0]['id']))
 			return $response['entries'][0]['id'];
