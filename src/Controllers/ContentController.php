@@ -68,6 +68,7 @@ class ContentController  extends Controller
 			$this->NoStockVariations = $this->variations;
 			if($print == "y") {
 				echo json_encode($this->variations);
+				exit;
 			}
 			
 			# get data of selected brand from dropshiper
@@ -107,7 +108,7 @@ class ContentController  extends Controller
 		  CURLOPT_RETURNTRANSFER => true,
 		  CURLOPT_ENCODING => "",
 		  CURLOPT_MAXREDIRS => 10,
-		  CURLOPT_TIMEOUT => 90000000,
+		  CURLOPT_TIMEOUT => 30,
 		  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
 		  CURLOPT_CUSTOMREQUEST => "GET",
 		  CURLOPT_HTTPHEADER => array(
@@ -125,7 +126,7 @@ class ContentController  extends Controller
 		if ($err) {
 		  echo "cURL Error #:" . $err;
 		} else {
-			//echo $response;
+			echo $response;
 		  $response =json_decode($response,true); 
 		  if(isset($response['entries']) && !empty($response['entries'])) {
 			  foreach($response['entries'] as $entries) {
