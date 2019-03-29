@@ -24,7 +24,7 @@ class ContentController  extends Controller
 	public $NoStockVariations;
 	
 	public function cgi_update_stock() {
-		$host = $_SERVER['HTTP_HOST'];
+		$host = "joiurjeuiklb.plentymarkets-cloud02.com";
 		$brand = isset($_GET['brand'])?$_GET['brand']:'';
 		$login = $this->login($host);
 		$login = json_decode($login, true);
@@ -77,6 +77,7 @@ class ContentController  extends Controller
 			
 			if(!empty($this->NoStockVariations)) {
 				foreach($this->NoStockVariations as $k=>$v) {
+					if(!is_numeric($k)) continue;
 					$temp = array (
 						'variation_id' => $v,
 						'availability' => 0,
@@ -130,7 +131,7 @@ class ContentController  extends Controller
 		  $response =json_decode($response,true); 
 		  if(isset($response['entries']) && !empty($response['entries'])) {
 			  foreach($response['entries'] as $entries) {
-				if($entries['isMain'] == true) continue;
+				//if($entries['isMain'] == true) continue;
 				$number = $entries['number'];
 				$this->variations[$number] = $entries['id'];
 			  }
